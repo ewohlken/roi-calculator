@@ -5,7 +5,7 @@ export default class Calculator extends React.Component {
     super(props);
 
     this.state = {
-      data: {
+      input: {
         Application: null,
         MeasurementSystem: null,
         Location: null,
@@ -13,44 +13,50 @@ export default class Calculator extends React.Component {
         DoorWidth: null,
         HeatRetention: {
           InsideTemp: null,
-          OutsideTemp: null
+          OutsideTemp: null,
+          WeeksUsedPerYear: null
         },
         ACRetention: {
           InsideTemp: null,
-          OutsideTemp: null
+          OutsideTemp: null,
+          WeeksUsedPerYear: null
         },
         WalkInCoolerFreezer: {
           CoolerFreezerTemp: null,
           TempOutsideCoolerFreezer: null,
           RH_inside: null,
-          RH_outside: null
-        }
-
-      }
-
-      input: {
-
-
-
-
-
-
-Hours/Day
-% door open
-Days/Week
-Weeks/year
-Weeks/year
-Weeks/year
-
-
+          RH_outside: null,
+          WeeksUsedPerYear: null
+        },
+        HoursBusinessOpenDaily: null,
+        PercentageOfHoursDoorOpen: null,
+        DaysBusinessOpenWeekly: null,
+        CostOfHeating: null,
+        LocalCostOfElectricity: null,
+        Series: null,
+        Models: null
       },
       output: {
-        AirCurtainCost: null,
+        PurchaseCost: null,
         InstallationCost: null,
-        CostToRunPerYear: null,
-        TimeUntilAirCurtainPaysForItself: null
+        CostToRunYearly: null,
+        AirCurtainPaysItselfOffIn: null
       }
     }
+  }
+
+  updateInput = (name, value) => {
+    if(this.state.input.hasOwnProperty(name) && this.state.input[name] !== value) {
+      this.state.input[name] = value;
+    }
+  }
+
+  updateOutput = (inputOrInputs) => {
+
+  }
+
+  displayError = (message) => {
+
   }
 
   render() {
@@ -58,7 +64,14 @@ Weeks/year
     return (
       <div>
         <div>
-          <CalculatorInputs></CalculatorInputs>
+          <Dropdown name="Application">
+            <option value="HeatRetention">Heat Retention</option>
+            <option value="ACRetention">Air Conditioning Retention</option>
+            <option value="HeatAndACRetention">Heat and Air Conditioning Retention</option>
+            <option value="WalkInCooler">Walk-in Cooler/Refrigerated Storage</option>
+            <option value="WalkInFreezer">Walk-in Freezer/Cold Storage</option>
+          </Dropdown>
+          <Dropdown name="MeasurementSystem"></Dropdown>
         </div>
         <div>
           <CalculatorOutput></CalculatorOutput>
@@ -69,10 +82,22 @@ Weeks/year
   }
 }
 
-class CalculatorInputs extends React.Component {
+class Dropdown extends React.Component {
+
+
   render(){
     return(
+      <select name={this.props.name} >
+        {this.props.children}
+      </select>
+    )
+  }
+}
 
+class Input extends React.Component {
+  render(){
+    return(
+      input[type="text"]
     )
   }
 }
