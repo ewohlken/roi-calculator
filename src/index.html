@@ -8,6 +8,112 @@
 </head>
 <body>
   <div id="app"></div>
+  <script type="text/javascript">
+    // Data Schema
+    var _initialData = {
+      constants : {
+        installationCost: 2500,
+        Cd: 0.65,
+  			g: 9.81,
+  			Cv: 0.55,
+  			shielding:	1,
+  			ρ: 1.2,
+  			Cp: 1.005,
+        AmbientPressure: 14.696,
+  			heatRetention: {
+          tempEff: 0.70 //Thermal Eff,
+        },
+  			ACRetention: {
+          tempEff: 0.33 //CoolingEff
+        },
+  			walkInCooler: {
+          tempEff: 0.43 //CoolingEffWalkInCooler
+        },
+        walkInFreezer: {
+          tempEff: 0.67 //CoolingEffFreezer
+        },
+        series: {
+          LPV2 : {
+            'cost': 1575,
+            'maxHeight': 7,
+            'zeroWindEfficiency': 70,
+            'slope_LP': -8,
+          },
+          STD  : {
+            'cost': 1575,
+            'maxHeight': 7,
+            'zeroWindEfficiency': 70,
+            'slope_LP': -8,
+          },
+          HV : {
+            'cost': 1575,
+            'maxHeight': 7,
+            'zeroWindEfficiency': 70,
+            'slope_LP': -8,
+          },
+          EP : {
+            'cost': 1575,
+            'maxHeight': 7,
+            'zeroWindEfficiency': 70,
+            'slope_LP': -8,
+          },
+          WMI : {
+            'cost': 1575,
+            'maxHeight': 7,
+            'zeroWindEfficiency': 70,
+            'slope_LP': -8,
+          },
+          WMH : {
+            'cost': 1575,
+            'maxHeight': 7,
+            'zeroWindEfficiency': 70,
+            'slope_LP': -8,
+          },
+          BD : {
+            'cost': 1575,
+            'maxHeight': 7,
+            'zeroWindEfficiency': 70,
+            'slope_LP': -8,
+          }
+        }
+      },
+      inputs: {
+        applications: [''],
+        measurementSystem: 'IP',
+        doorHeight: 16,
+        doorWidth: 10,
+        heatRetention: {
+          insideTemp: null,
+          outsideTemp: null,
+          weeksUsedYearly: null
+        },
+        ACRetention: {
+          insideTemp: null,
+          outsideTemp: null,
+          weeksUsedYearly: null,
+        },
+        windSpeedAverage: 10,
+        windyPercentageOfDay: 20,
+        walkInCoolerFreezer: {
+          CoolerFreezerTemp: null,
+          TempOutsideCoolerFreezer: null,
+          RH_inside: null,
+          RH_outside: null,
+          weeksUsedYearly: null
+        },
+        operationTime: {
+
+        },
+        hoursDaily: null,
+        percentageOpenDaily: null,
+        daysBusinessOpenWeekly: null,
+        costOfHeating: null,
+        localCostOfElectricity: null,
+        series: null,
+        models: null
+      }
+    }
+  </script>
   <script type="text/javascript" src="/build/app.bundle.js"></script>
 </body>
 </html>

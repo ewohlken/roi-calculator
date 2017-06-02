@@ -1,124 +1,149 @@
 import convert from "./convert";
 
-export default class CalculatorService {
 
-	constructor(ms="IP") {
-		this.ms = ms;
-		this.constants = {
-			H: 1.3716, //f3
-			Cd: 0.65, //f4
-			g: 9.81,
-			Cv: 0.55,
-			shielding:	1,
-			ρ: 1.2,
-			Cp: 1.005, //f9
-			ThermalEff: 0.70,
-			CoolingEff: 0.33,
-			CoolingEffWalkInCooler: 0.43,
-			CoolingEffFreezer: 0.67,
-			AmbientPressure: 14.696,
-			IndoorDensity: 1.4 //f15
-		};
+
+export default calculatorService = (initData) => {
+
+	/// add better error logic
+	if(typeof initData === "undefined" || !initData.constants.length) {
+		console.error("error, need Air Curtain series data to be defined before loading calculator module");
+		return;
 	}
 
-	HeatRetention(series, doorWidth, doorHeight, insideTemp, outsideTemp, windSpeedAverage, windPercent, hoursOpenDaily, daysOpenWeekly, weeksOfHeatRetentionYearly, costOfHeatKwh) {
-		//wind calculations
-		let doorArea           = doorWidth*doorHeight;
-		let H                  = doorHeight/2;
-		let deltaT             = insideTemp - outsideTemp;
-		let qStack             = this.constants.Cd*doorArea*0.15*(Math.sqrt(2*this.constants.g*H*(Math.abs(deltaT)/insideTemp)));
-		let qWind              = this.constants.Cv*doorArea*windSpeedAverage*0.5*this.constants.shielding;
-		let qTot_ht_x          = windPercent*(Math.sqrt(Math.pow(qStack, 2)+Math.pow(qWind, 2)));
-		let qTot_ht_1_minus_x  = (1-windPercent)*qStack;
- 		let qTotal             = qTot_ht_x + qTot_ht_1_minus_x;
-		let q_net_ht_x         = this.constants.Cp*this.constants.p*Math.abs(deltaT)*qTot_ht_x/this.constants.ThermalEff;
-		let q_net_ht_1_minus_x = this.constants.Cp*this.constants.p*Math.abs(deltaT)*qTot_ht_1_minus_x/this.constants.ThermalEff;
+	// this.constants = initData.constants;
+	const _get = (key, _key = null) => _key === null ? initData.constants[key] : initData.constants[key][_key];
+	const _calc = {};
+	_calc.WindEffeciency = (series, windSpeedAverage, series.zeroWindEfficiency) => series.slope_LP*windSpeedAverage+zeroWindEfficiency;
 
-		let efficiencyWind = this.getWindEffeciencyBySeries(series);
-		let efficiencyNoWind = this.getNoWindEffeciencyBySeries(series);
+	_calc.PowerCostYearly = (hoursOpenDaily, daysOpenWeekly, weeksUsedYearly, costOfPower, horsePower) => hoursOpenDaily * daysOpenWeekly * weeksUsedYearly * costOfPower * horsePower;
 
-		let qNetSavedByAirCurtainWithWind = q_net_ht_x * efficiencyWind;
-		let qNetSavedByAirCurtainWithoutWind = q_net_ht_x * efficiencyNoWind;
+	_calc.Q_stack = (doorArea, doorHeight, deltaTemp, temp) => _get('Cd')*doorArea*0.15*(Math.sqrt(2*_get('g')*(doorHeight/2)*(Math.abs(deltaTemp)/temp)));
 
-		let dollarsSavedByAirCurtain = (qNetSavedByAirCurtainWithWind + qNetSavedByAirCurtainWithoutWind) * hoursOpenDaily * daysOpenWeekly * weeksOfHeatRetentionYearly * costOfHeat;
+	_calc.Q_wind = (doorArea, windSpeedAverage) => doorArea*windSpeedAverage*_get('Cv')*0.5*_get('shielding');
 
-	},
-	ACRetention(series, doorWidth, doorHeight, insideTemp, outsideTemp, windSpeedAverage, windPercent, hoursOpenDaily, daysOpenWeekly, weeksOfHeatRetentionYearly, costOfHeatKwh) {
-		//wind calculations
-		let doorArea           = doorWidth*doorHeight;
-		let H                  = doorHeight/2;
-		let deltaT             = insideTemp - outsideTemp;
-		let qStack             = this.constants.Cd*doorArea*0.15*(Math.sqrt(2*this.constants.g*H*(Math.abs(deltaT)/outsideTemp)));
-		let qWind              = this.constants.Cv*doorArea*windSpeedAverage*0.5*this.constants.shielding;
-		let qTot_ac_x          = windPercent*(Math.sqrt(Math.pow(qStack, 2)+Math.pow(qWind, 2)));
-		let qTot_ac_1_minus_x  = (1-windPercent)*qStack;
- 		let qTotal             = qTot_ac_x + qTot_ac_1_minus_x;
-		let q_net_ac_x         = this.constants.Cp*this.constants.p*Math.abs(deltaT)*qTot_ac_x/this.constants.CoolingEff;
-		let q_net_ac_1_minus_x = this.constants.Cp*this.constants.p*Math.abs(deltaT)*qTot_ac_1_minus_x/this.constants.CoolingEff;
+	_calc.Q_tot_x = (windOccurancePercentage, Q_stack, Q_wind) => windOccurancePercentage*(Math.sqrt(Math.pow(Q_stack, 2)+Math.pow(Q_wind, 2)));
 
-		let efficiencyWind = this.getWindEffeciencyBySeries(series);
-		let efficiencyNoWind = this.getNoWindEffeciencyBySeries(series);
+	_calc.Q_tot_1_minus_x = (windOccurancePercentage, Q_stack) => (1-windOccurancePercentage)*Q_stack;
 
-		let qNetSavedByAirCurtainWithWind = q_net_ac_x * efficiencyWind;
-		let qNetSavedByAirCurtainWithoutWind = q_net_ac_x * efficiencyNoWind;
+	_calc.q_net_x = (deltaTemp, Q_tot_x, tempEff) => _get('Cp')*_get('p')*Math.abs(deltaTemp)*Q_tot_x/tempEff;
 
-		let dollarsSavedByAirCurtain = (qNetSavedByAirCurtainWithWind + qNetSavedByAirCurtainWithoutWind) * hoursOpenDaily * daysOpenWeekly * weeksOfHeatRetentionYearly * costOfHeat;
+	_calc.q_net_x_minus_1 = (deltaTemp, Q_tot_1_minus_x, tempEff) => _get('Cp')*_get('p')*Math.abs(deltaTemp)*Q_tot_1_minus_x/tempEff;
 
-	},
+	_calc.profitFromRetentionYearly = ( series, doorWidth, doorArea, tempConstant, outsideTemp, deltaTemp, windSpeedAverage, windOccurancePercentage, hoursOpenDaily, daysOpenWeekly, weeksUsedYearly, energyCost) => ;
 
-	WalkInCoolerFreezer() {
-		let doorArea 
+			let q_net_AC_x = _calc.q_net_x(deltaTemp,
+					tempConstant,
+					_calc.Q_tot_x(windOccurancePercentage,
+					_calc.Q_stack(doorArea, doorHeight, outsideTemp, deltaTemp),
+					_calc.Q_wind(doorArea, windSpeedAverage)
+			));
+			let q_net_AC_1_minus_x = _calc.q_net_x_minus_1(deltaTemp, tempConstant, _calc.Q_tot_1_minus_x(windOccurancePercentage, _calc.Q_stack(doorArea, doorHeight, outsideTemp, deltaTemp)));
 
-		let Q_stack = this.constants.Cd*C5*0.15*(2*F5*F3*(ABS(C20)/C19))^0.5;
-		let q_net = IF($'Inputs for Calc'.D2="Walk-in Cooler/Refrigerated Storage";(F9*F8*ABS(C20)*M5*1/F12);IF($'Inputs for Calc'.D2="Walk-in Freezer/Cold Storage";(F9*F8*ABS(C20)*M5*1/F13);0));
-		let waterVaporPressure_In =(10^(8.07131-(1730.63/(233.426+((B18-32)*(5/9)))))*0.0193367747);
-		let waterVaporPressure_Out =(10^(8.07131-(1730.63/(233.426+((B19-32)*(5/9)))))*0.0193367747);
-		let HumiditySaturated_in =(7000*18.02/28.85)*M7/(F14-M7);
-		let HumiditySaturated_out =(7000*18.02/28.85)*M8/(F14-M8);
-		let AbsoluteHumidity_in =(M9*B21*100/700000);
-		let AbsoluteHumidity_out =(M10*B22*100/700000);
-		let q_latent =M5*(M12-M11)*F15*2270;
-		let TotalHeat =M13+M6;
-
-	}
-
-	getWindEffeciencyBySeries(series) {
-		let windEfficiency = null;
-		switch(series) {
-			case "LP":
-			windEfficiency = -10;
-			break;
-			case "STD":
-			windEfficiency = 23.75;
-			break;
-			case "HV":
-			windEfficiency = 30;
-			break;
-			case "EP":
-			windEfficiency = 25;
-			break;
-			case "WMI":
-			windEfficiency = 48.75;
-			break;
-			case "BD":
-			windEfficiency = 50;
-			break;
+			return (q_net_AC_x * _calc.WindEffeciency(series, windSpeedAverage) + q_net_AC_x * series["zeroWindEfficiency"]) * hoursOpenDaily * daysOpenWeekly * weeksUsedYearly * energyCost;
 		}
-
-		return windEfficiency < 0 ? 0 : windEfficiency;
-
-	},
-	getNoWindEffeciencyBySeries(series) {
-		return series === "LP" ? 70 : 80;
-	},
-}
-
-function calculate(data, ms="IP"){
-
-	//if we aren't using the metric system already, convert input to metric units
-	if(ms!=="SI"){
-		data = convert(data, "IP", "SI");
 	}
 
+	return {
 
-}
+		ROI: (data) => {
+			const _series = _get('series', data.seriesName);
+			const _doorArea = data.doorWidth * data.doorHeight;
+			const _tempEffConstant = _get(data.applications, "tempEff");
+
+
+			let _dollarsSavedYearly;
+
+			if(data.applications.indexOf("heatRention") > -1 || data.applications.indexOf("heatRention")) {
+				_dollarsSavedYearly = _calc.profitFromYearly(_series, data.doorWidth, _doorArea, );
+			}
+
+			if(data.applications.indexOf("heatRention") > -1) {
+				_dollarsSavedYearly += _calc.profitFromRetentionYearly();
+			}
+
+			if(data.applications.indexOf("heatRetention") > -1) {
+				let _deltaTemp = data["heatRetention"][insideTemp] - data["heatRetention"][outsideTemp];
+
+				dollarsSavedYearly += _calc.dollarsSavedYearly("heatRetention", _series, data["heatRetention"][insideTemp], _deltaTemp);
+			}
+
+			if(data.applications.indexOf("ACRetention") > -1) {
+				dollarsSavedYearly += _calc.dollarsSavedYearly("ACRetention", data.outsideTemp);
+			}
+
+			if(data.applications.indexOf("walkInFreezer") > -1)
+
+			if(application === "ACRetention"){
+				_tempConstant = _get("coolingEff");
+				let _Q_stack = _calc.Q_stack(_doorArea, doorHeight, _deltaTemp, data[application]["outsideTemp"]);
+			}else if(application === "walkInFreezer" || ){
+				let _temp = application === "heatRetention" ? data.insideTemp : data.outsideTemp;
+				let _tempConstant = _get("coolingEff");
+			}else if(application === "walkInCooler") {
+
+			}
+
+			//first calc dollars saved per year
+			let _dollarsSavedYearly = _dollarsSavedYearly(initialCost, costYearly, doorWidth, doorHeight);
+			let _yearlyProfit = dollarsSavedYearly - costYearly;
+
+			return _dollarsSavedYearly >= 0 ? initialCost / yearlyProfit;
+		},
+
+		powerCostYearly: (data) => {
+			let weeksUsedYearly = 0;
+
+			data.applications.forEach((application) => {
+				weeksUsedYearly += data[application]["weeksUsedYearly"];
+			});
+
+			return _calc.PowerCostYearly(input.hoursOpenDaily, input.daysOpenWeekly, weeksUsedYearly, input.costOfPower, input.horsePower);
+		},
+
+		HeatRetention : (series, doorWidth, doorHeight, insideTemp, outsideTemp, windSpeedAverage, windOccurancePercentage, hoursOpenDaily, daysOpenWeekly, weeksUsedYearly, energyCost) => {
+			//wind calculations
+			let doorArea           = doorWidth*doorHeight;
+			let deltaTemp             = insideTemp - outsideTemp;
+
+			let Q_stack             = _calc.Q_stack(doorArea, doorHeight, deltaTemp, insideTemp);
+
+			let Q_wind              = _get('Cv')*doorArea*windSpeedAverage*0.5*_get('shielding');
+			let Q_tot_HR_x          = windOccurancePercentage*(Math.sqrt(Math.pow(Q_stack, 2)+Math.pow(Q_wind, 2)));
+			let qTot_ht_1_minus_x  = (1-windOccurancePercentage)*Q_stack;
+	 		let qTotal             = Q_tot_HR_x + qTot_ht_1_minus_x;
+			let q_net_ht_x         = _get('Cp')*_get('p')*Math.abs(deltaTemp)*Q_tot_HR_x/_get('thermalEff');
+			let q_net_ht_1_minus_x = _get('Cp')*_get('p')*Math.abs(deltaTemp)*qTot_ht_1_minus_x/_get('thermalEff');
+
+			let efficiencyZeroWind = _calc.ZeroWindEffeciency(series);
+			let efficiencyWind = _calc.WindEffeciency(series, windSpeedAverage, efficiencyZeroWind);
+
+			let qNetSavedByAirCurtain = q_net_ht_x * efficiencyWind;
+			let qNetSavedByAirCurtainZeroWind = q_net_ht_x * efficiencyZeroWind;
+
+		},
+
+		WalkInCoolerFreezer(series, door, temp, wind, business, heatingCost) {
+
+			let [dWidth, dHeight] = door;
+			let [insideTemp, outsideTemp] = temp;
+
+			let doorArea = dWidth * dHeight;
+			let H = doorHeight/2;
+			let deltaTemp = temp[0] - temp[1];
+
+
+
+			let Q_stack = Q_stack(door[0], door[1]);
+			// let q_net = IF($'Inputs for Calc'.D2="Walk-in Cooler/Refrigerated Storage";(F9*F8*ABS(C20)*M5*1/F12);IF($'Inputs for Calc'.D2="Walk-in Freezer/Cold Storage";(F9*F8*ABS(C20)*M5*1/F13)never;0));
+			// let waterVaporPressure_In =(10^(8.07131-(1730.63/(233.426+((B18-32)*(5/9)))))*0.0193367747);
+			// let waterVaporPressure_Out =(10^(8.07131-(1730.63/(233.426+((B19-32)*(5/9)))))*0.0193367747);
+			// let HumiditySaturated_in =(7000*18.02/28.85)*M7/(F14-M7);
+			// let HumiditySaturated_out =(7000*18.02/28.85)*M8/(F14-M8);
+			// let AbsoluteHumidity_in =(M9*B21*100/700000);
+			// let AbsoluteHumidity_out =(M10*B22*100/700000);
+			// let q_latent =M5*(M12-M11)*F15*2270;
+			// let TotalHeat =M13+M6;
+
+		}
+	}
+})(_initialData);

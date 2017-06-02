@@ -1,3 +1,3 @@
-export default function() {
-  console.log('flooby');
-}
+import calculatorService from "./services/calculate.js";
+
+console.log(calculatorService);
