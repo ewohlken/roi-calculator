@@ -26,11 +26,13 @@
   			ACRetention: {
           tempEff: 0.33 //CoolingEff
         },
-  			walkInCooler: {
-          tempEff: 0.43 //CoolingEffWalkInCooler
+  			cooler: {
+          tempEff: 0.43, //CoolingEffWalkInCooler
+          correctionFactor: 0.65
         },
-        walkInFreezer: {
-          tempEff: 0.67 //CoolingEffFreezer
+        freezer: {
+          tempEff: 0.67, //CoolingEffFreezer
+          correctionFactor: 0.65
         },
         series: {
           LPV2 : {
@@ -80,37 +82,38 @@
       inputs: {
         applications: [''],
         measurementSystem: 'IP',
-        doorHeight: 16,
-        doorWidth: 10,
+        door: {
+          height: 16,
+          width: 10
+        },
         heatRetention: {
           insideTemp: null,
           outsideTemp: null,
-          weeksUsedYearly: null
+          weeksUsedPerYear: null
         },
         ACRetention: {
           insideTemp: null,
           outsideTemp: null,
-          weeksUsedYearly: null,
+          weeksUsedPerYear: null,
         },
         windSpeedAverage: 10,
-        windyPercentageOfDay: 20,
+        percentageOfWindOccurencePerDay: 20,
         walkInCoolerFreezer: {
           CoolerFreezerTemp: null,
           TempOutsideCoolerFreezer: null,
           RH_inside: null,
           RH_outside: null,
-          weeksUsedYearly: null
+          weeksUsedPerYear: null
         },
-        operationTime: {
-
+        operation: {
+          hoursPerDay: 8,
+          doorOpenPercentage: 25,
+          daysPerWeek: 5
         },
-        hoursDaily: null,
-        percentageOpenDaily: null,
-        daysBusinessOpenWeekly: null,
-        costOfHeating: null,
-        localCostOfElectricity: null,
-        series: null,
-        models: null
+        heatingCost: null,
+        electricityCost: null,
+        seriesName: null,
+        horsepower: null
       }
     }
   </script>
