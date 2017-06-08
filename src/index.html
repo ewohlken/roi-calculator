@@ -17,7 +17,7 @@
   			g: 9.81,
   			Cv: 0.55,
   			shielding:	1,
-  			ρ: 1.2,
+  			p: 1.2,
   			Cp: 1.005,
         AmbientPressure: 14.696,
   			heatRetention: {
@@ -33,87 +33,96 @@
         freezer: {
           tempEff: 0.67, //CoolingEffFreezer
           correctionFactor: 0.65
-        },
-        series: {
-          LPV2 : {
-            'cost': 1575,
-            'maxHeight': 7,
-            'zeroWindEfficiency': 70,
-            'slope_LP': -8,
-          },
-          STD  : {
-            'cost': 1575,
-            'maxHeight': 7,
-            'zeroWindEfficiency': 70,
-            'slope_LP': -8,
-          },
-          HV : {
-            'cost': 1575,
-            'maxHeight': 7,
-            'zeroWindEfficiency': 70,
-            'slope_LP': -8,
-          },
-          EP : {
-            'cost': 1575,
-            'maxHeight': 7,
-            'zeroWindEfficiency': 70,
-            'slope_LP': -8,
-          },
-          WMI : {
-            'cost': 1575,
-            'maxHeight': 7,
-            'zeroWindEfficiency': 70,
-            'slope_LP': -8,
-          },
-          WMH : {
-            'cost': 1575,
-            'maxHeight': 7,
-            'zeroWindEfficiency': 70,
-            'slope_LP': -8,
-          },
-          BD : {
-            'cost': 1575,
-            'maxHeight': 7,
-            'zeroWindEfficiency': 70,
-            'slope_LP': -8,
-          }
         }
       },
-      inputs: {
-        applications: [''],
+      series: {
+        LPV2 : {
+          'purchaseCost': 1575,
+          'maxHeight': 7,
+          'zeroWindEfficiency': 70,
+          'slope_LP': -8,
+        },
+        STD  : {
+          'purchaseCost': 1575,
+          'maxHeight': 7,
+          'zeroWindEfficiency': 70,
+          'slope_LP': -8,
+        },
+        HV : {
+          'purchaseCost': 1575,
+          'maxHeight': 7,
+          'zeroWindEfficiency': 70,
+          'slope_LP': -8,
+        },
+        EP : {
+          'purchaseCost': 1575,
+          'maxHeight': 7,
+          'zeroWindEfficiency': 70,
+          'slope_LP': -8,
+        },
+        WMI : {
+          'purchaseCost': 1575,
+          'maxHeight': 7,
+          'zeroWindEfficiency': 70,
+          'slope_LP': -8,
+        },
+        WMH : {
+          'purchaseCost': 1575,
+          'maxHeight': 7,
+          'zeroWindEfficiency': 70,
+          'slope_LP': -8,
+        },
+        BD : {
+          'purchaseCost': 1575,
+          'maxHeight': 7,
+          'zeroWindEfficiency': 70,
+          'slope_LP': -8,
+        }
+      },
+      input: {
+        applications: ['heatRetention'],
         measurementSystem: 'IP',
         door: {
-          height: 16,
-          width: 10
+          height: 7,
+          width: 8
         },
         heatRetention: {
-          insideTemp: null,
-          outsideTemp: null,
-          weeksUsedPerYear: null
+          insideTemp: 70,
+          outsideTemp: 90
         },
         ACRetention: {
-          insideTemp: null,
-          outsideTemp: null,
-          weeksUsedPerYear: null,
+          insideTemp: 70,
+          outsideTemp: 30
         },
         windSpeedAverage: 10,
-        percentageOfWindOccurencePerDay: 20,
-        walkInCoolerFreezer: {
-          CoolerFreezerTemp: null,
-          TempOutsideCoolerFreezer: null,
-          RH_inside: null,
-          RH_outside: null,
-          weeksUsedPerYear: null
+        percentageOfWindPerDay: 20,
+        cooler: {
+          insideTemp: -7.6,
+          outsideTemp: 30,
+          RH_inside: 10,
+          RH_outside: 30
+        },
+        freezer: {
+          insideTemp: -7.6,
+          outsideTemp: 30,
+          RH_inside: 10,
+          RH_outside: 30
         },
         operation: {
-          hoursPerDay: 8,
-          doorOpenPercentage: 25,
-          daysPerWeek: 5
+          hoursPerDay: 13,
+          doorOpenPercentage: 50,
+          daysPerWeek: 7,
+          weeksUsedPerYear: {
+            heatRetention: 26,
+            ACRetention: 12,
+            cooler: 52,
+            freezer: 52
+          }
         },
-        heatingCost: null,
-        electricityCost: null,
-        seriesName: null,
-        horsepower: null
+        heatingCost: 11.66,
+        electricityCost: 0.03,
+        seriesName: "LPV2",
+        horsepower: 10
       }
     }
   </script>
