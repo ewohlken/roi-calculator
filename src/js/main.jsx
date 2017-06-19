@@ -1,3 +1,6 @@
+import 'bootstrap/dist/css/bootstrap';
+import 'bootstrap/dist/css/bootstrap-theme';
+
 import React from "react";
 import ReactDOM from "react-dom";
 

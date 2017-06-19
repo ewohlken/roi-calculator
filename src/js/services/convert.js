@@ -20,11 +20,23 @@ const util = {
 	KMHtoMPH: function(kmh){
 		return kmh/1.60934;
 	},
+	MPHtoKMH: function(mph){
+		return mph*1.60934;
+	},
 	CtoF: function(C){
 		return (C*9/5) + 32;
 	},
-	MtoFT: function(ft){
-		return ft/0.3048;
+	FtoC: function(F){
+		return (F - 32) * 5 / 9;
+	},
+	FtoK: function(F){
+		return (F-32)*5/9+273;
+	},
+	MtoFT: function(m){
+		return m/0.3048;
+	},
+	FTtoM: function(ft){
+		return ft*0.3048;
 	}
 }
 
@@ -53,7 +65,7 @@ export default function(value=[], from, to){
 			}
 		}
 	}else{
-		value = convert(parseInt(value), from, to);
+		value = convert(parseFloat(value), from, to);
 	}
 
 	return value;

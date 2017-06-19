@@ -32,7 +32,12 @@ module.exports = {
     filename: 'app.bundle.js'
   },
   resolve: {
-    extensions: [".js", ".json", ".jsx"]
+    extensions: [".js", ".json", ".jsx",  ".css"],
+    modules: [
+      config.dir.build,
+      './node_modules',
+      './bower_components'
+    ]
   },
   devtool: 'source-map',
   devServer: {
@@ -51,6 +56,11 @@ module.exports = {
         test: /\.js(x)?$/,
         exclude: /(node_modules|bower_components)/,
         use: 'babel-loader' //?cacheDirectory
+      },
+      {
+        test: /\.css$/,
+        exclude: /(node_modules|bower_components)/,
+        use: [ 'style-loader', 'css-loader' ]
       }
     //   {
     //    test: /\.css$/,

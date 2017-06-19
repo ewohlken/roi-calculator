@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>ROI Calculator</title>
+  <!-- <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap-thmeme.css"> -->
 </head>
 <body>
   <div id="app"></div>
@@ -12,7 +14,6 @@
     // Data Schema
     var _initialData = {
       constants : {
-        installationCost: 2500,
         Cd: 0.65,
   			g: 9.81,
   			Cv: 0.55,
@@ -35,93 +36,104 @@
           correctionFactor: 0.65
         }
       },
+      product: {
+        'purchaseCost': 1575,
+        'installationCost': 2500,
+        'maxHeight': 7,
+        'zeroWindEfficiency': 70,
+        'slope': -8,
+        'name': 'LPV2'
+      },
       series: {
         LPV2 : {
           'purchaseCost': 1575,
+          'installationCost': 2500,
           'maxHeight': 7,
           'zeroWindEfficiency': 70,
-          'slope_LP': -8,
+          'slope': -8
         },
         STD  : {
-          'purchaseCost': 1575,
-          'maxHeight': 7,
-          'zeroWindEfficiency': 70,
-          'slope_LP': -8,
+          'purchaseCost': 2247,
+          'installationCost': 2500,
+          'maxHeight': 8,
+          'zeroWindEfficiency': 80,
+          'slope': -5.625
         },
         HV : {
-          'purchaseCost': 1575,
-          'maxHeight': 7,
-          'zeroWindEfficiency': 70,
-          'slope_LP': -8,
+          'purchaseCost': 2945,
+          'installationCost': 2500,
+          'maxHeight': 10,
+          'zeroWindEfficiency': 80,
+          'slope': -5
         },
         EP : {
-          'purchaseCost': 1575,
-          'maxHeight': 7,
-          'zeroWindEfficiency': 70,
-          'slope_LP': -8,
+          'purchaseCost': 3256,
+          'installationCost': 2500,
+          'maxHeight': 14,
+          'zeroWindEfficiency': 80,
+          'slope': -5.5
         },
         WMI : {
-          'purchaseCost': 1575,
-          'maxHeight': 7,
-          'zeroWindEfficiency': 70,
-          'slope_LP': -8,
+          'purchaseCost': 5842,
+          'installationCost': 2500,
+          'maxHeight': 14,
+          'zeroWindEfficiency': 80,
+          'slope': -3.125
         },
         WMH : {
-          'purchaseCost': 1575,
-          'maxHeight': 7,
-          'zeroWindEfficiency': 70,
-          'slope_LP': -8,
+          'purchaseCost': 6278,
+          'installationCost': 2500,
+          'maxHeight': 16,
+          'zeroWindEfficiency': 80,
+          'slope': -3.125
         },
         BD : {
-          'purchaseCost': 1575,
-          'maxHeight': 7,
-          'zeroWindEfficiency': 70,
-          'slope_LP': -8,
+          'purchaseCost': 7996,
+          'installationCost': 2500,
+          'maxHeight': 18,
+          'zeroWindEfficiency': 80,
+          'slope': -3
         }
       },
       input: {
         applications: ['heatRetention'],
         measurementSystem: 'IP',
-        door: {
-          height: 7,
-          width: 8
+        doorHeight: 7,
+        doorWidth: 8,
+        insideTemp: {
+          heatRetention: 70,
+          ACRetention: 70,
+          cooler: -7.6,
+          freezer: -7.6
         },
-        heatRetention: {
-          insideTemp: 70,
-          outsideTemp: 90
-        },
-        ACRetention: {
-          insideTemp: 70,
-          outsideTemp: 30
+        outsideTemp: {
+          heatRetention: 90,
+          ACRetention: 30,
+          cooler: 30,
+          freezer: 30
         },
         windSpeedAverage: 10,
-        percentageOfWindPerDay: 20,
-        cooler: {
-          insideTemp: -7.6,
-          outsideTemp: 30,
-          RH_inside: 10,
-          RH_outside: 30
+        percentageOfWindPerDay: 0.2,
+        RH_inside: {
+          freezer: 10,
+          cooler: 10
         },
-        freezer: {
-          insideTemp: -7.6,
-          outsideTemp: 30,
-          RH_inside: 10,
-          RH_outside: 30
+        RH_outside: {
+          freezer: 30,
+          cooler: 30
         },
-        operation: {
-          hoursPerDay: 13,
-          doorOpenPercentage: 50,
-          daysPerWeek: 7,
-          weeksUsedPerYear: {
-            heatRetention: 26,
-            ACRetention: 12,
-            cooler: 52,
-            freezer: 52
-          }
+        hoursPerDay: 6.5,
+        doorOpenPercentage: 0.5,
+        daysPerWeek: 7,
+        weeksUsedPerYear: {
+          heatRetention: 24,
+          ACRetention: 12,
+          cooler: 52,
+          freezer: 52
         },
         heatingCost: 11.66,
         electricityCost: 0.03,
-        seriesName: "LPV2",
+        seriesName: "WMI",
         horsepower: 10
       }
     }
